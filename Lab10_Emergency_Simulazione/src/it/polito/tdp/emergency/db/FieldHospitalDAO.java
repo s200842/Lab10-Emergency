@@ -13,12 +13,10 @@ import it.polito.tdp.emergency.simulation.Paziente;
 import it.polito.tdp.emergency.simulation.Paziente.StatoPaziente;
 
 public class FieldHospitalDAO {
-	
-	DBConnect dbc;
 
 	public Set<Paziente> getPazienti(){
 		Set<Paziente> pazienti = new HashSet<Paziente>();
-		Connection c = dbc.getConnection();
+		Connection c = DBConnect.getConnection();
 		try {
 			PreparedStatement st = c.prepareStatement("SELECT * FROM patients;");
 			ResultSet res = st.executeQuery();
@@ -44,6 +42,8 @@ public class FieldHospitalDAO {
 					throw new RuntimeException("Triage non riconosciuto");
 				}
 			}
+			res.close();
+			c.close();
 			return pazienti;	
 		}
 		catch (SQLException e) {
@@ -53,16 +53,22 @@ public class FieldHospitalDAO {
 	}
 	
 	public String getStatoPaziente(int id){
-		Connection c = dbc.getConnection();
+		Connection c = DBConnect.getConnection();
 		try {
 			PreparedStatement st = c.prepareStatement("SELECT triage FROM arrivals WHERE patient = ?;");
 			st.setInt(1, id);
 			ResultSet res = st.executeQuery();
 			if(res.next()){
 				String state = res.getString("triage");
+				res.close();
+				c.close();
 				return state;
 			}
-			else return null;
+			else{
+				res.close();
+				c.close();
+				return null;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -71,9 +77,9 @@ public class FieldHospitalDAO {
 	
 	public Set<Evento> getArrivi(){
 		Set<Evento> arrivi = new HashSet<Evento>();
-		Connection c = dbc.getConnection();
+		Connection c = DBConnect.getConnection();
 		try {
-			PreparedStatement st = c.prepareStatement("SELECT timestamp, patient FROM arrivals;");
+			PreparedStatement st = c.prepareStatement("SELECT timestamp, patient FROM arrivals ORDER BY timestamp;");
 			ResultSet res = st.executeQuery();
 			long mezzanotte=0;
 			while(res.next()){
@@ -85,6 +91,8 @@ public class FieldHospitalDAO {
 				Evento e = new Evento(tempo, TipoEvento.PAZIENTE_ARRIVA, res.getInt("patient"));
 				arrivi.add(e);
 			}
+			res.close();
+			c.close();
 			return arrivi;
 			
 		} catch (SQLException e) {

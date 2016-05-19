@@ -95,14 +95,15 @@ public class Core {
 			if (pazienti.get(e.getDato()).getStato() == Paziente.StatoPaziente.SALVO) {
 				System.out.println("Paziente già salvato: " + e);
 			} else {
-				//Se non è stato curato aggiorno i pazienti morti ed imposto il suo stato su nero (morto)
-				++pazientiPersi;
-				pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.NERO);
-				System.out.println("Paziente morto: " + e);
 				//Se muore mentre era in cura, libero il medico che lo stava operando
 				if (pazienti.get(e.getDato()).getStato() == Paziente.StatoPaziente.IN_CURA) {
 					++mediciDisponibili;
 				}
+				//Se non è stato curato aggiorno i pazienti morti ed imposto il suo stato su nero (morto)
+				++pazientiPersi;
+				pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.NERO);
+				System.out.println("Paziente morto: " + e);
+				
 			}
 			break;
 		default:

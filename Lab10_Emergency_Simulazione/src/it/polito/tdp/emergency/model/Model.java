@@ -21,6 +21,7 @@ public class Model {
 		for(Evento e : dao.getArrivi()){
 			simulatore.aggiungiEvento(e);
 		}
+		simulatore.simula();
 	}
 
 }
