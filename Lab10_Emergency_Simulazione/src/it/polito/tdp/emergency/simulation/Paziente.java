@@ -1,24 +1,20 @@
-//////////////////////////////////////////////////////////////////-*-java-*-//
-//             // Classroom code for "Tecniche di Programmazione"           //
-//   #####     // (!) Giovanni Squillero <giovanni.squillero@polito.it>     //
-//  ######     //                                                           //
-//  ###   \    // Copying and distribution of this file, with or without    //
-//   ##G  c\   // modification, are permitted in any medium without royalty //
-//   #     _\  // provided this notice is preserved.                        //
-//   |   _/    // This file is offered as-is, without any warranty.         //
-//   |  _/     //                                                           //
-//             // See: http://bit.ly/tecn-progr                             //
-//////////////////////////////////////////////////////////////////////////////
-
 package it.polito.tdp.emergency.simulation;
 
 public class Paziente implements Comparable<Paziente> {
-	public enum StatoPaziente {
-		ROSSO, GIALLO, VERDE, BIANCO, IN_CURA, SALVO, NERO
-	};
+	
+	//Dati per gestione stato paziente 
+	public enum StatoPaziente {	ROSSO, GIALLO, VERDE, BIANCO, IN_CURA, SALVO, NERO };
 
 	private int id;
 	private StatoPaziente stato;
+	private String nome;
+	
+	public Paziente(int id, String nome, StatoPaziente stato) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.stato = stato;
+	}
 
 	@Override
 	public int hashCode() {
@@ -50,18 +46,17 @@ public class Paziente implements Comparable<Paziente> {
 	public int getId() {
 		return id;
 	}
+	
+	public String getNome(){
+		return nome;
+	}
 
 	@Override
 	public String toString() {
-		return "Paziente [id=" + id + ", stato=" + stato + "]";
+		return "Paziente [id=" + id + ", nome=" + nome + ", stato=" + stato + "]";
 	}
 
-	public Paziente(int id, StatoPaziente stato) {
-		super();
-		this.id = id;
-		this.stato = stato;
-	}
-
+	//Confonta gli stati in ordine di gravità
 	@Override
 	public int compareTo(Paziente arg0) {
 		return Integer.compare(this.getStato().ordinal(), arg0.getStato().ordinal());

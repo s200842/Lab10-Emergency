@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class DBConnect {
 
-	static private final String jdbcUrl = "jdbc:mysql://localhost/emergency?user=root&password=";
+	static private final String jdbcUrl = "jdbc:mysql://localhost/emergency?user=root";
 	static private DBConnect instance = null;
 
 	private DBConnect() {
@@ -29,7 +29,6 @@ public class DBConnect {
 			Connection conn = DriverManager.getConnection(jdbcUrl);
 			return conn;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException("Cannot get connection " + jdbcUrl, e);
 		}

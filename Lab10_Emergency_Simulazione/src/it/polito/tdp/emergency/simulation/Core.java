@@ -1,14 +1,4 @@
-//////////////////////////////////////////////////////////////////-*-java-*-//
-//             // Classroom code for "Tecniche di Programmazione"           //
-//   #####     // (!) Giovanni Squillero <giovanni.squillero@polito.it>     //
-//  ######     //                                                           //
-//  ###   \    // Copying and distribution of this file, with or without    //
-//   ##G  c\   // modification, are permitted in any medium without royalty //
-//   #     _\  // provided this notice is preserved.                        //
-//   |   _/    // This file is offered as-is, without any warranty.         //
-//   |  _/     //                                                           //
-//             // See: http://bit.ly/tecn-progr                             //
-//////////////////////////////////////////////////////////////////////////////
+//Simulatore vero e proprio, gestisce eventi ed entità relative
 
 package it.polito.tdp.emergency.simulation;
 
@@ -18,6 +8,22 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class Core {
+
+	//Lista eventi da processare uno dopo l'altro in ordine temporale
+	Queue<Evento> listaEventi = new PriorityQueue<Evento>();
+	
+	//Mappa codPaziente-paziente
+	Map<Integer, Paziente> pazienti = new HashMap<Integer, Paziente>();
+	
+	//Coda per gestire la priorità di trattamento dei pazienti
+	Queue<Paziente> pazientiInAttesa = new PriorityQueue<Paziente>();
+	
+	//Variabili quantitative
+	int mediciDisponibili = 0;
+	int pazientiSalvati = 0;
+	int pazientiPersi = 0;
+	
+	//Getters - setters
 	public int getPazientiSalvati() {
 		return pazientiSalvati;
 	}
@@ -26,13 +32,6 @@ public class Core {
 		return pazientiPersi;
 	}
 
-	int pazientiSalvati = 0;
-	int pazientiPersi = 0;
-
-	Queue<Evento> listaEventi = new PriorityQueue<Evento>();
-	Map<Integer, Paziente> pazienti = new HashMap<Integer, Paziente>();
-	int mediciDisponibili = 0;
-	Queue<Paziente> pazientiInAttesa = new PriorityQueue<Paziente>();
 
 	public int getMediciDisponibili() {
 		return mediciDisponibili;
@@ -42,6 +41,7 @@ public class Core {
 		this.mediciDisponibili = mediciDisponibili;
 	}
 
+	//Aggiunta eventi e pazienti alle liste
 	public void aggiungiEvento(Evento e) {
 		listaEventi.add(e);
 	}
@@ -50,12 +50,17 @@ public class Core {
 		pazienti.put(p.getId(), p);
 	}
 
+	//Entità fondamentale del simulatore -- COSA FA --
 	public void passo() {
+		//Prendo il primo evento in coda e in base al tipo di evento agisco di conseguenza
 		Evento e = listaEventi.remove();
 		switch (e.getTipo()) {
+		//Se arriva un paziente
 		case PAZIENTE_ARRIVA:
 			System.out.println("Arrivo paziente:" + e);
+			//Aggiungo il paziente a quelli in attesa in base alla sua priorità
 			pazientiInAttesa.add(pazienti.get(e.getDato()));
+			//Imposto la morte del paziente in base alla gravità della situazione
 			switch (pazienti.get(e.getDato()).getStato()) {
 			case BIANCO:
 				break;
@@ -72,21 +77,29 @@ public class Core {
 				System.err.println("Panik!");
 			}
 			break;
+		//Se il paziente è stato curato e guarisce
 		case PAZIENTE_GUARISCE:
+			//Se non è morto (inserito per evitare stampa di eventi superflui)
 			if (pazienti.get(e.getDato()).getStato() != Paziente.StatoPaziente.NERO) {
 				System.out.println("Paziente salvato: " + e);
+				//Aggiorno lo stato del paziente (per non farlo "morire" erroneamente dopo")
 				pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.SALVO);
+				//Libero il medico che lo ha curato ed aggiorno il numero di pazienti salvati
 				++mediciDisponibili;
 				++pazientiSalvati;
 			}
 			break;
+		//Se il paziente muore	
 		case PAZIENTE_MUORE:
+			//Se il paziente è stato curato evito di stamparne l'evento "morto" programmato in precedenza
 			if (pazienti.get(e.getDato()).getStato() == Paziente.StatoPaziente.SALVO) {
-				System.out.println("Paziente giï¿½ salvato: " + e);
+				System.out.println("Paziente già salvato: " + e);
 			} else {
+				//Se non è stato curato aggiorno i pazienti morti ed imposto il suo stato su nero (morto)
 				++pazientiPersi;
 				pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.NERO);
 				System.out.println("Paziente morto: " + e);
+				//Se muore mentre era in cura, libero il medico che lo stava operando
 				if (pazienti.get(e.getDato()).getStato() == Paziente.StatoPaziente.IN_CURA) {
 					++mediciDisponibili;
 				}
@@ -95,19 +108,20 @@ public class Core {
 		default:
 			System.err.println("Panik!");
 		}
-
-		while (cura(e.getTempo()))
-			;
+		//Finchè ho medici disponibili e pazienti da curare curo tutti i pazienti che posso
+		while (cura(e.getTempo()));
 	}
 
 	protected boolean cura(long adesso) {
+		//Se non ho pazienti in attesa o non ho medici non curo nessuno
 		if (pazientiInAttesa.isEmpty())
 			return false;
 		if (mediciDisponibili == 0)
 			return false;
-
+		//Se ne ho la possibilitò curo il paziente con la priorità più alta se non è ancora morto
 		Paziente p = pazientiInAttesa.remove();
 		if (p.getStato() != Paziente.StatoPaziente.NERO) {
+			//Tolgo un medico da quelli disponibili ed imposto lo stato in cura, con relativo evento
 			--mediciDisponibili;
 			pazienti.get(p.getId()).setStato(Paziente.StatoPaziente.IN_CURA);
 			aggiungiEvento(new Evento(adesso + 30, Evento.TipoEvento.PAZIENTE_GUARISCE, p.getId()));
@@ -116,7 +130,8 @@ public class Core {
 
 		return true;
 	}
-
+	
+	//Avvia la simulazione
 	public void simula() {
 		while (!listaEventi.isEmpty()) {
 			passo();
