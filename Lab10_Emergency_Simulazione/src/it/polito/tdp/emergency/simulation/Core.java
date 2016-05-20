@@ -94,7 +94,7 @@ public class Core {
 			//Se non è morto (inserito per evitare stampa di eventi superflui)
 			if (pazienti.get(e.getDato()).getStato() != Paziente.StatoPaziente.NERO) {
 				System.out.println("Paziente salvato: " + e);
-				//Aggiorno lo stato del paziente (per non farlo "morire" erroneamente dopo")
+				//Aggiorno lo stato del paziente (per non farlo "morire" erroneamente dopo)
 				pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.SALVO);
 				//Libero il medico che lo ha curato ed aggiorno il numero di pazienti salvati
 				Dottore d = dottori.get(pazienti.get(e.getDato()).getCuratore().getIdDottore());
@@ -115,14 +115,32 @@ public class Core {
 			if (pazienti.get(e.getDato()).getStato() == Paziente.StatoPaziente.SALVO) {
 				System.out.println("Paziente già salvato: " + e);
 			} else {
-				//Se muore sotto i ferri, libero il medico che lo stava operando
+				//Se muore sotto i ferri
 				if (pazienti.get(e.getDato()).getStato() == Paziente.StatoPaziente.IN_CURA) {
-					mediciDisponibili.add(pazienti.get(e.getDato()).getCuratore());
+					Dottore d = pazienti.get(e.getDato()).getCuratore();
+					//Se il medico che lo doveva operare ha finito il turno non lo aggiungo a quelli disponibili, se no lo libero subito
+					if(d.getStato() == StatoDottore.DOCTOR_CURA_OLTRE){
+						pazientiPersi ++;
+						pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.NERO);
+						System.out.println("Paziente morto sotto i ferri: " + e);
+						break;
+					}
+					else{
+						//Se il medico non ha finito il turno lo libero
+						mediciDisponibili.add(pazienti.get(e.getDato()).getCuratore());
+						pazientiPersi ++;
+						pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.NERO);
+						System.out.println("Paziente morto sotto i ferri: " + e);
+						break;
+					}
+					
 				}
-				//Se non è stato curato aggiorno i pazienti morti ed imposto il suo stato su nero (morto)
-				++pazientiPersi;
-				pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.NERO);
-				System.out.println("Paziente morto: " + e);
+				else{
+					//Morto prima delle cure aggiorno i pazienti morti ed imposto il suo stato su nero (morto)
+					++pazientiPersi;
+					pazienti.get(e.getDato()).setStato(Paziente.StatoPaziente.NERO);
+					System.out.println("Paziente morto: " + e);
+				}
 			}
 			break;
 		case DOCTOR_INIZIO_TURNO:
@@ -141,6 +159,7 @@ public class Core {
 				this.aggiungiEvento(new Evento((long)(e.getTempo()+16*60), TipoEvento.DOCTOR_INIZIO_TURNO, d.getIdDottore()));
 			}
 			else{
+				d.setStato(StatoDottore.DOCTOR_CURA_OLTRE);
 				mediciDisponibili.remove(d);
 				this.aggiungiEvento(new Evento((long)(e.getTempo()+16*60), TipoEvento.DOCTOR_INIZIO_TURNO, d.getIdDottore()));
 			}
