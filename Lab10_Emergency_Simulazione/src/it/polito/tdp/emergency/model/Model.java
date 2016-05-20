@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Set;
 
 import it.polito.tdp.emergency.db.FieldHospitalDAO;
+import it.polito.tdp.emergency.simulation.Assistente;
+import it.polito.tdp.emergency.simulation.Assistente.StatoAssistente;
 import it.polito.tdp.emergency.simulation.Core;
 import it.polito.tdp.emergency.simulation.Dottore;
 import it.polito.tdp.emergency.simulation.Evento;
+import it.polito.tdp.emergency.simulation.Evento.TipoEvento;
 import it.polito.tdp.emergency.simulation.Paziente;
 
 public class Model {
@@ -36,6 +39,14 @@ public class Model {
 		for(Dottore d : dott){
 			simulatore.aggiungiDottore(d);
 		}
+		
+		simulatore.aggiungiAssistente(new Assistente(1, "Assistente 1", StatoAssistente.ASSISTANT_OUT));
+		simulatore.aggiungiAssistente(new Assistente(2, "Assistente 2", StatoAssistente.ASSISTANT_OUT));
+		simulatore.aggiungiAssistente(new Assistente(3, "Assistente 3", StatoAssistente.ASSISTANT_OUT));
+		
+		simulatore.aggiungiEvento(new Evento(0, TipoEvento.ASSISTANT_INIZIO_TURNO, 1));
+		simulatore.aggiungiEvento(new Evento(480, TipoEvento.ASSISTANT_INIZIO_TURNO, 2));
+		simulatore.aggiungiEvento(new Evento(960, TipoEvento.ASSISTANT_INIZIO_TURNO, 3));
 		
 		simulatore.simula();
 	}
