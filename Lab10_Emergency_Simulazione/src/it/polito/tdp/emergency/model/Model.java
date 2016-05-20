@@ -58,9 +58,5 @@ public class Model {
 	public int getPersi(){
 		return simulatore.getPazientiPersi();
 	}
-	
-	public void clear(){
-		simulatore.clear();
-	}
 
 }

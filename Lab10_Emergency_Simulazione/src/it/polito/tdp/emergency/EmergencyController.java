@@ -41,9 +41,6 @@ public class EmergencyController {
 
     @FXML
     private Button btnAvvia;
-    
-    @FXML
-    private Button btnReset;
 
     @FXML
     private TextArea txtResult;
@@ -89,18 +86,6 @@ public class EmergencyController {
     	model.startSimulation(dottori, eventiDottori);
     	txtResult.setText(String.format("Pazienti salvati: %d\nPazienti persi: %d", model.getSalvi(), model.getPersi()));
     }
-    
-    @FXML
-    void doReset(ActionEvent event) {
-    	id_dott = 1;
-    	dottori.clear();
-    	eventiDottori.clear();
-    	txtDottoriInseriti.setText("Dottori inseriti: 0");
-    	txtNomeDottore.clear();
-    	txtOre.clear();
-    	txtResult.clear();
-    	model.clear();
-    }
 
     @FXML
     void initialize() {
@@ -109,7 +94,6 @@ public class EmergencyController {
         assert btnAggiungi != null : "fx:id=\"btnAggiungi\" was not injected: check your FXML file 'Emergency.fxml'.";
         assert txtDottoriInseriti != null : "fx:id=\"txtDottoriInseriti\" was not injected: check your FXML file 'Emergency.fxml'.";
         assert btnAvvia != null : "fx:id=\"btnAvvia\" was not injected: check your FXML file 'Emergency.fxml'.";
-        assert btnReset != null : "fx:id=\"btnReset\" was not injected: check your FXML file 'Emergency.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Emergency.fxml'.";
 
     }

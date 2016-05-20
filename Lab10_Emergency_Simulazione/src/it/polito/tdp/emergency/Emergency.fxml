@@ -61,14 +61,9 @@
             </Label>
             <HBox prefHeight="34.0" prefWidth="366.0">
                <children>
-                  <Button fx:id="btnAvvia" mnemonicParsing="false" onAction="#doAvvia" prefHeight="25.0" prefWidth="132.0" text="Avvia Simulazione">
+                  <Button fx:id="btnAvvia" mnemonicParsing="false" onAction="#doAvvia" prefHeight="25.0" prefWidth="186.0" text="Avvia Simulazione">
                      <HBox.margin>
-                        <Insets left="5.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button fx:id="btnReset" mnemonicParsing="false" onAction="#doReset" prefHeight="25.0" prefWidth="132.0" text="Reset">
-                     <HBox.margin>
-                        <Insets left="90.0" />
+                        <Insets left="80.0" top="5.0" />
                      </HBox.margin>
                   </Button>
                </children>

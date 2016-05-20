@@ -274,15 +274,5 @@ public class Core {
 			else break;
 		}
 	}
-	
-	public void clear(){
-		listaEventi.clear();
-		dottori.clear();
-		pazienti.clear();
-		mediciDisponibili.clear();
-		pazientiInAttesa.clear();
-		pazientiSalvati = 0;
-		pazientiPersi = 0;
-	}
 
 }
