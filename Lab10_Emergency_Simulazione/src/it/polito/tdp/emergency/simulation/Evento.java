@@ -4,7 +4,7 @@ package it.polito.tdp.emergency.simulation;
 
 public class Evento implements Comparable<Evento> {
 
-	public enum TipoEvento { PAZIENTE_ARRIVA, PAZIENTE_GUARISCE, PAZIENTE_MUORE	}
+	public enum TipoEvento { PAZIENTE_ARRIVA, PAZIENTE_GUARISCE, PAZIENTE_MUORE, DOCTOR_INIZIO_TURNO, DOCTOR_FINE_TURNO	}
 	
 	protected long tempo;
 	protected TipoEvento tipo;
